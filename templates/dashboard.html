@@ -1,0 +1,177 @@
+<!-- Prompt:
+I want to design a professional disaster monitoring dashboard UI.
+
+The dashboard should include:
+- A clean title and layout
+- A button to find nearest relief camp using user location
+- A map using Leaflet.js to display disaster zones
+- Colored zones based on risk levels (Red for High, Orange for Medium, Green for Low)
+- A heatmap to visualize intensity of disasters
+- A bar chart using Chart.js to show count of High, Medium, and Low risks
+- Real-time updates by fetching data every few seconds from backend
+- Alert popup when high-risk disaster is detected
+- Smooth routing line from user location to nearest camp
+
+The layout should be responsive and structured using cards/grid system,
+and the UI should look modern and clean.
+-->
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<h1>🌍 Disaster Monitoring System</h1>
+
+<button onclick="findCamp()" class="btn" style="max-width:250px;margin:auto;">
+📍 Find Nearest Camp
+</button>
+
+<!-- DASHBOARD GRID -->
+<div class="dashboard-grid">
+
+    <!-- GRAPH -->
+    <div class="chart-card">
+        <h3 style="text-align:center;">Risk Analysis</h3>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-card">
+        <div id="map"></div>
+    </div>
+
+</div>
+
+<div id="alertBox" class="alert"></div>
+
+<!-- LIBRARIES -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* ================= MAP ================= */
+var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+.addTo(map);
+
+var heatLayer = L.heatLayer([], {radius: 25}).addTo(map);
+
+/* ================= ALERT ================= */
+function showAlert(msg){
+    let box = document.getElementById("alertBox");
+    box.innerText = msg;
+    box.style.display = "block";
+
+    setTimeout(()=>{
+        box.style.display = "none";
+    },3000);
+}
+
+/* ================= CHART ================= */
+var chart = new Chart(document.getElementById("chart"), {
+    type: 'bar',
+    data: {
+        labels: ["High","Medium","Low"],
+        datasets: [{
+            label: "Risk Count",
+            data: [0,0,0],
+            backgroundColor: ["red","orange","green"]
+        }]
+    }
+});
+
+/* ================= LOAD DATA ================= */
+function loadData(){
+
+    fetch('/live_data')
+    .then(res => res.json())
+    .then(data => {
+
+        let heatPoints = [];
+        let high=0, medium=0, low=0;
+
+        map.eachLayer(function(layer){
+            if(layer instanceof L.Circle){
+                map.removeLayer(layer);
+            }
+        });
+
+        data.forEach(d => {
+
+            let color = "green";
+            let intensity = 0.3;
+
+            if(d.risk == "HIGH RISK"){
+                color = "red";
+                intensity = 1;
+                high++;
+                showAlert("🚨 HIGH RISK DETECTED!");
+            }
+            else if(d.risk == "MEDIUM RISK"){
+                color = "orange";
+                intensity = 0.6;
+                medium++;
+            } else {
+                low++;
+            }
+
+            // ZONE
+            L.circle([d.lat, d.lon], {
+                color: color,
+                radius: 40000,
+                fillOpacity: 0.2
+            }).addTo(map);
+
+            heatPoints.push([d.lat, d.lon, intensity]);
+        });
+
+        heatLayer.setLatLngs(heatPoints);
+
+        // UPDATE GRAPH
+        chart.data.datasets[0].data = [high, medium, low];
+        chart.update();
+    });
+}
+
+setInterval(loadData, 5000);
+loadData();
+
+/* ================= ROUTING ================= */
+function findCamp(){
+    navigator.geolocation.getCurrentPosition(function(pos){
+
+        let lat = pos.coords.latitude;
+        let lon = pos.coords.longitude;
+
+        fetch('/nearest_camp', {
+            method:'POST',
+            headers:{'Content-Type':'application/x-www-form-urlencoded'},
+            body:`lat=${lat}&lon=${lon}`
+        })
+        .then(res=>res.json())
+        .then(data=>{
+
+            L.marker([lat,lon]).addTo(map)
+            .bindPopup("📍 You").openPopup();
+
+            L.marker([data.lat,data.lon]).addTo(map)
+            .bindPopup("🏕️ " + data.name);
+
+            L.polyline([
+                [lat,lon],
+                [data.lat,data.lon]
+            ],{
+                color:'blue',
+                weight:4
+            }).addTo(map);
+
+            map.flyTo([lat,lon], 7);
+        });
+    });
+}
+</script>
+
+{% endblock %}

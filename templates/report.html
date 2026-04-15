@@ -1,0 +1,28 @@
+<!-- Prompt:
+Create a clean and user-friendly disaster reporting form.
+
+The form should:
+- Be centered using a card layout
+- Include inputs for location, rainfall, and water level
+- Use proper spacing and styled input fields
+- Have a clear submit button
+- Follow modern UI design principles
+
+Ensure the form looks neat and professional.
+-->
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Report Disaster</h2>
+
+<div class="card">
+<form method="POST">
+<input name="location" placeholder="Enter Location" required>
+<input name="rainfall" type="number" placeholder="Rainfall (mm)" required>
+<input name="water_level" type="number" placeholder="Water Level (%)" required>
+<button class="btn">Submit Report</button>
+</form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+<!-- Prompt:
+Create a simple and clean form to add victims into the system.
+
+The form should:
+- Include fields for name and age
+- Be centered using a card layout
+- Have proper spacing and styled inputs
+- Include a submit button
+
+Ensure the UI is clean and consistent with the rest of the application.
+-->
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Victim</h2>
+
+<div class="card">
+<form method="POST">
+<input name="name" placeholder="Enter Name" required>
+<input name="age" type="number" placeholder="Enter Age" required>
+<button class="btn">Add Victim</button>
+</form>
+</div>
+
+{% endblock %}

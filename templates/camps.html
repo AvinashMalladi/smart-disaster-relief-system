@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Camps</h2>
+
+<div class="table-container">
+<a href="/add_camp" class="btn" style="width:200px;margin-bottom:10px;">Add Camp</a>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Location</th>
+<th>Capacity</th>
+<th>Occupied</th>
+</tr>
+
+{% for c in camps %}
+<tr>
+<td>{{c[1]}}</td>
+<td>{{c[2]}}</td>
+<td>{{c[3]}}</td>
+<td>{{c[4]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+<!-- Prompt:
+Create a form to add new relief camps.
+
+The form should include:
+- Camp name
+- Location
+- Capacity
+- Food resources
+- Water resources
+
+The UI should:
+- Use a centered card layout
+- Have clean input fields and spacing
+- Include a styled submit button
+- Look consistent with the overall dashboard design
+-->
+
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Camp</h2>
+
+<form method="POST" class="form">
+<input name="name" placeholder="Camp Name" required>
+<input name="location" placeholder="Location" required>
+<input name="capacity" type="number" placeholder="Capacity" required>
+<input name="food" type="number" placeholder="Food" required>
+<input name="water" type="number" placeholder="Water" required>
+<button class="btn">Add Camp</button>
+</form>
+
+{% endblock %}

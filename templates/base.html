@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disaster System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Relief</h2>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/report">Report</a>
+    <a href="/camps">Camps</a>
+    <a href="/add_victim">Victims</a>
+    <a href="/logout">Logout</a>
+</div>
+
+<div class="main">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Admin Panel</h1>
+
+<h2>Users</h2>
+<table>
+{% for u in users %}
+<tr><td>{{u[1]}}</td></tr>
+{% endfor %}
+</table>
+
+<h2>Camps</h2>
+<table>
+{% for c in camps %}
+<tr>
+<td>{{c[1]}}</td>
+<td>{{c[3]}} / {{c[4]}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
